@@ -1,7 +1,7 @@
 {
   "name": "hasdata",
   "displayName": "HasData",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Turn public web pages into structured JSON from inside Cursor. One hosted MCP server covers Google, Bing, Amazon, Walmart, Maps, Zillow, Airbnb, TikTok, YouTube and more, with a rule per site that tells the agent where each payload lies to it.",
   "author": {
     "name": "HasData",
