@@ -6,19 +6,11 @@ The scraping runs on HasData infrastructure, so there is no headless browser to 
 
 ## Install
 
-Install the plugin from the Cursor marketplace, then set your HasData API key in the environment Cursor starts from:
+Install the plugin from the Cursor marketplace. Cursor asks for your HasData API key during install; get one at [app.hasdata.com/api-keys](https://app.hasdata.com/api-keys). The free tier does not need a card.
 
-```bash
-export HASDATA_API_KEY=your_key_here
-```
+The bundled `mcp.json` sends that key as the `x-api-key` header. The tool list loads without a key. A missing or wrong key fails on the tool call, usually as an error inside the tool result, which is the failure to expect when tools appear but nothing returns. To change the key later, open the plugin in Cursor settings and edit the variable.
 
-Get a key at [hasdata.com](https://hasdata.com). The free tier does not need a card.
-
-The bundled `mcp.json` reads that variable. If the key is missing the server answers 401 on the first call, which is the failure to expect when tools appear but nothing returns.
-
-### Connecting with OAuth instead
-
-The endpoint also speaks OAuth 2.1 with dynamic client registration. To use it, drop the `headers` block from the MCP server entry and let Cursor run the authorisation flow on first connect. The API key route is the default here because it works without a browser round trip.
+This install uses the API key. The server also accepts OAuth 2.1, but only on a connection that does not send `x-api-key`. The bundled file is read-only after install, so do not delete its `headers` block to switch modes.
 
 ## What is in the box
 
@@ -32,23 +24,23 @@ The endpoint also speaks OAuth 2.1 with dynamic client registration. To use it, 
 
 ## Narrowing the tool list
 
-The full endpoint exposes every tool at once. A model choosing among dozens of similarly shaped tools picks wrong more often than one choosing among five, and every tool description occupies context whether or not it gets called.
+The full endpoint exposes every tool at once, 68 of them. A model choosing among dozens of similarly shaped tools picks wrong more often than one choosing among five, and every tool description occupies context whether or not it gets called.
 
-Add `?apis=` to the URL to filter it down:
+The marketplace copy of `mcp.json` is read-only, and an edit there is overwritten on update. To filter, add your own server in Cursor's user MCP config. That file interpolates `${env:NAME}`, not the plugin's `${HASDATA_API_KEY}`:
 
 ```json
 {
   "mcpServers": {
-    "hasdata": {
-      "type": "streamable-http",
+    "hasdata-amazon-walmart": {
+      "type": "http",
       "url": "https://mcp.hasdata.com/mcp?apis=amazon,walmart",
-      "headers": { "x-api-key": "${HASDATA_API_KEY}" }
+      "headers": { "x-api-key": "${env:HASDATA_API_KEY}" }
     }
   }
 }
 ```
 
-Services combine comma-separated or by repeating the parameter. An unknown name is an error rather than an empty list, so a typo fails loudly.
+Services combine comma-separated or by repeating the parameter. If every name is unknown the server returns HTTP 400. If at least one name is valid, the unknown ones are ignored, so `amazon,walmrart` returns only Amazon.
 
 The service segment is the same one that appears in every tool name, which follows `hasdata_<service>_<group>_<method>`. It does not always match the product name: Google Search is `google_serp`, flights are `google_travel_flights` and hotels are `google_travel_hotels`.
 

@@ -19,6 +19,6 @@ Paging works two ways that do not mix. Use `start` or `nextPageToken`, never bot
 
 ## Reading the payload
 
-A search that matches nothing returns a successful result with an empty `organicResults` array, so branch on length. Ratings on Yelp are heavily filtered by Yelp itself, and `notRecommended` reviews are a separate set, so a summary that ignores them is a partial answer. Say which set you read.
+A search that matches nothing leaves `organicResults` absent rather than empty, while `ads` can still arrive with entries. Test for the key before reading it, and do not treat `ads` as matches. Ratings on Yelp are heavily filtered by Yelp itself, and `notRecommended` reviews are a separate set, so a summary that ignores them is a partial answer. Say which set you read.
 
 Every call spends credits from the connected account. Prefer one precise search over several exploratory ones, and pull reviews only for the places that matter to the task.

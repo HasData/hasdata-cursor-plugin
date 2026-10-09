@@ -47,19 +47,13 @@ To install straight from this repository instead, point Cursor at it and it read
 
 ## Authentication
 
-Set the key in the environment Cursor starts from:
-
-```bash
-export HASDATA_API_KEY=your_key_here
-```
-
-The bundled `mcp.json` reads that variable:
+Cursor asks for the key when you install the plugin. The manifest declares a `HASDATA_API_KEY` variable, and the bundled `mcp.json` sends it as a header:
 
 ```json
 {
   "mcpServers": {
     "hasdata": {
-      "type": "streamable-http",
+      "type": "http",
       "url": "https://mcp.hasdata.com/mcp",
       "headers": { "x-api-key": "${HASDATA_API_KEY}" }
     }
@@ -67,9 +61,9 @@ The bundled `mcp.json` reads that variable:
 }
 ```
 
-If the variable is missing the server answers 401 on the first call, which is the failure to expect when the tools appear but nothing comes back.
+To change the key later, open the plugin in Cursor settings and edit the variable. The tool list loads without a key. A missing or wrong key fails on the tool call, usually as an error inside the tool result, which is the failure to expect when the tools appear but nothing comes back.
 
-The endpoint also speaks OAuth 2.1 with dynamic client registration. To use it, remove the `headers` block and let Cursor run the authorisation flow on first connect. The key route is the default here because it works without a browser round trip.
+This install uses the API key. The server also accepts OAuth 2.1, but only on a connection that does not send `x-api-key`. The bundled file is read-only after install, so do not delete its `headers` block to switch modes.
 
 ## What is inside
 
@@ -163,21 +157,21 @@ Google Search, Google Images, Google Trends, Google Scholar, Google Maps, Google
 
 The full endpoint exposes every tool at once. A model choosing among dozens of similarly shaped tools picks wrong more often than one choosing among five, and every tool description occupies context whether or not it gets called.
 
-Add `?apis=` to the URL to filter it:
+The marketplace copy of `mcp.json` is read-only, and an edit there is overwritten on update. To filter, add your own server in Cursor's user MCP config. That file interpolates `${env:NAME}`, not the plugin's `${HASDATA_API_KEY}`:
 
 ```json
 {
   "mcpServers": {
-    "hasdata": {
-      "type": "streamable-http",
+    "hasdata-amazon-walmart": {
+      "type": "http",
       "url": "https://mcp.hasdata.com/mcp?apis=amazon,walmart",
-      "headers": { "x-api-key": "${HASDATA_API_KEY}" }
+      "headers": { "x-api-key": "${env:HASDATA_API_KEY}" }
     }
   }
 }
 ```
 
-Services combine comma-separated or by repeating the parameter. An unknown name is an error rather than an empty list, so a typo fails loudly.
+Services combine comma-separated or by repeating the parameter. If every name is unknown the server returns HTTP 400. If at least one name is valid, the unknown ones are ignored, so `amazon,walmrart` returns only Amazon.
 
 The service segment is the one that appears in every tool name, which follows `hasdata_<service>_<group>_<method>`. It does not always match the product name. Google Search is `google_serp`, flights are `google_travel_flights` and hotels are `google_travel_hotels`.
 
@@ -205,7 +199,7 @@ Several omit a key rather than returning it empty. On Bing and DuckDuckGo the ad
 
 Several never return nothing. DuckDuckGo answers a nonsense query with ten loosely related results, Bing does the same, and Google Maps returns a single guessed place.
 
-A 422 names the field that failed validation and is not billed. A 401 means the key is missing or wrong.
+A validation failure names the field and is not billed. It often arrives inside the tool result rather than as an HTTP status. A 401 means the key is missing or wrong, and it arrives on the tool call, not when the tool list loads.
 
 The per-site rules carry the specific cases. Read them rather than inferring one site from another.
 
@@ -256,7 +250,7 @@ Because the traps are specific to each site and a generic rule would be wrong ab
 
 ### Can I use one site instead of all of them?
 
-Yes, with `?apis=` on the URL. Each service also ships as a standalone MCP server behind a shorter URL.
+Yes. Each service also ships as a standalone MCP server behind a shorter URL. `?apis=` on this plugin's bundled file will not stick, because Cursor keeps that file read-only. Add a separate server in your own MCP config, as in Narrowing the tool list.
 
 ### Is HasData affiliated with the sites it reads?
 

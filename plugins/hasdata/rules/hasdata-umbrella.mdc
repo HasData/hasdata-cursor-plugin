@@ -5,15 +5,15 @@ alwaysApply: false
 
 # HasData through one endpoint
 
-`https://mcp.hasdata.com/mcp` exposes every HasData tool at once, 63 of them, across search, e-commerce, maps, travel, real estate, jobs and social. Authentication is an `x-api-key` header or OAuth 2.1.
+`https://mcp.hasdata.com/mcp` exposes every HasData tool at once, 68 of them, across search, e-commerce, maps, travel, real estate, jobs and social. This plugin sends an `x-api-key` header. The server also accepts OAuth 2.1 on a connection that does not send that header. Do not remove the header from the installed plugin. Cursor keeps that file read-only and will overwrite the edit.
 
 ## Narrow the surface before you connect
 
-`?apis=` filters the endpoint to the services you actually need. `?apis=amazon` returns five tools instead of sixty-three, and several services combine either comma-separated or by repeating the parameter, so `?apis=amazon,walmart` and `?apis=amazon&apis=walmart` both return eight.
+`?apis=` filters the endpoint to the services you actually need. `?apis=amazon` returns five tools instead of 68, and several services combine either comma-separated or by repeating the parameter, so `?apis=amazon,walmart` and `?apis=amazon&apis=walmart` both return eight.
 
-An unknown service name is an error rather than an empty list, so a typo fails loudly.
+If every name is unknown the server returns HTTP 400. If at least one name is valid, the unknown ones are ignored and the call succeeds, so `?apis=amazon,walmrart` returns only the Amazon tools. The installed plugin's `mcp.json` is read-only, so filtering is a connection setting, not a change to make mid-chat.
 
-Filtering is worth doing. A model choosing among sixty-three similarly shaped tools picks wrong more often than one choosing among five, and every tool description sits in the context window whether or not it gets called.
+Filtering is worth doing. A model choosing among 68 similarly shaped tools picks wrong more often than one choosing among five, and every tool description sits in the context window whether or not it gets called.
 
 ## Tool names say where a tool lives
 

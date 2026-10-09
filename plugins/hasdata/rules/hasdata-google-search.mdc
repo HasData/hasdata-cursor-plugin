@@ -15,7 +15,7 @@ Ten tools over one endpoint. Pick by what the answer needs, because they differ 
 
 ## Tokens, not ids
 
-Three tools expand something a search already returned, and they take a token rather than a query. `ai_overview` takes the `pageToken` of an AI Overview block, `immersive_product` takes the token on a shopping card, `events` takes the `pageToken` on an item in `eventsResults`. Run the search first, read the token out of the response, then call the tool. Tokens go stale, so a token from yesterday will not work today.
+Three tools expand something a search already returned, and they take a token rather than a query. `hasdata_google_serp_ai_overview_getAiOverviewResponse` takes the `pageToken` of an AI Overview block. `hasdata_google_serp_immersive_product_getImmersive_e29f691177` takes the token on a shopping card. `hasdata_google_serp_events_getEventInformation` takes the `pageToken` on an item in `eventsResults`. There is no tool named `ai_overview`, `immersive_product` or `events`. Run the search first, read the token out of the response, then call the tool. Tokens go stale, so a token from yesterday will not work today.
 
 ## Localisation
 

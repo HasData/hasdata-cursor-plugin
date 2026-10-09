@@ -16,4 +16,4 @@ Then:
 5. Do not report a knowledge panel, videos, images or related searches. This payload has none of them, so describing them means inventing them.
 6. Page only if I ask, with `first: 11` for the second page, and check the links actually changed before reporting them as new. Bing ignores some offsets and returns the first page again.
 
-If I also have the Google MCP server connected, run the same query there and put the two lists side by side, marking the domains that appear on one engine and not the other. Otherwise say that the comparison needs it, and stop rather than guessing what Google would show.
+Google is on this same server. Call `hasdata_google_serp_serp_getSearchResults` with the same query, and pass `location`, `gl` and `hl` for the market. Put the two lists side by side, marking the domains that appear on one engine and not the other. Do not stop to ask for a separate Google MCP server.

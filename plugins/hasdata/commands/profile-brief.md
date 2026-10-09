@@ -15,4 +15,4 @@ Then:
 4. Read `latestPosts` before deciding whether to page. More than twelve posts means paging with `nextPageToken`, not a bigger `limit`, because twelve is the ceiling for one call and the first page repeats what the profile already returned.
 5. Summarise the feed from the mix of `type` and `productType`, the recurring subjects in the captions, and the accounts that keep appearing in `mentions`.
 
-Do not rank posts by engagement. This payload has no likes, no comments and no timestamps, so any ordering by popularity would be invented. If I ask for the best-performing post, tell me the data does not carry it.
+Do not invent a ranking from the feed. It has no likes, no comments and no timestamps. If I ask for the best-performing post, call `hasdata_instagram_comments_getInstagramComments` with each post URL. That response carries `likesCount`, `commentsCount` and `timestamp` on its `post` object, and each post is another billed call, so say how many you are about to make.
