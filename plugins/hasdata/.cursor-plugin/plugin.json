@@ -1,7 +1,7 @@
 {
   "name": "hasdata",
   "displayName": "HasData",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "minClientVersions": {
     "cursor": "3.13.0"
   },
@@ -34,18 +34,5 @@
     "mcp",
     "research"
   ],
-  "variables": {
-    "type": "object",
-    "properties": {
-      "HASDATA_API_KEY": {
-        "type": "string",
-        "title": "HasData API key",
-        "description": "API key from https://app.hasdata.com/api-keys. The free tier works and needs no card."
-      }
-    },
-    "required": [
-      "HASDATA_API_KEY"
-    ]
-  },
   "mcpServers": "./mcp.json"
 }

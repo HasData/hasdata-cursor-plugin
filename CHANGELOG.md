@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2
+
+- The install signs in with OAuth, the same way the Claude plugin does. Removed the required `HASDATA_API_KEY` variable and the `x-api-key` header from the bundled `mcp.json`, which was what made Cursor show a key field instead of the sign-in.
+- An API key still works on a server you add yourself. Put `x-api-key` only on that entry. A header on the installed server turns OAuth off.
+
 ## 1.2.1
 
 - The Cursor manifest now points at `mcp.json`, so the marketplace install registers the server.

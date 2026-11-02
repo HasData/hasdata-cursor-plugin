@@ -6,11 +6,11 @@ The scraping runs on HasData infrastructure, so there is no headless browser to 
 
 ## Install
 
-Install the plugin from the Cursor marketplace. Cursor asks for your HasData API key during install; get one at [app.hasdata.com/api-keys](https://app.hasdata.com/api-keys). The free tier does not need a card.
+Install the plugin from the Cursor marketplace. Cursor then asks you to sign in to HasData. Sign-up is free and needs no card: [app.hasdata.com](https://app.hasdata.com/sign-up).
 
-The bundled `mcp.json` sends that key as the `x-api-key` header. The tool list loads without a key. A missing or wrong key fails on the tool call, usually as an error inside the tool result, which is the failure to expect when tools appear but nothing returns. To change the key later, open the plugin in Cursor settings and edit the variable.
+The bundled `mcp.json` is only the server URL, so Cursor discovers OAuth on that endpoint. The tool list loads before you sign in. A call without a session fails on the tool call, usually as an error inside the tool result, which is the failure to expect when tools appear but nothing returns.
 
-This install uses the API key. The server also accepts OAuth 2.1, but only on a connection that does not send `x-api-key`. The bundled file is read-only after install, so do not delete its `headers` block to switch modes.
+Do not add an `x-api-key` header to the installed file. A header turns OAuth off for that connection, and Cursor keeps the file read-only. An API key still works on a server you add yourself.
 
 ## What is in the box
 
@@ -26,19 +26,20 @@ This install uses the API key. The server also accepts OAuth 2.1, but only on a 
 
 The full endpoint exposes every tool at once, 68 of them. A model choosing among dozens of similarly shaped tools picks wrong more often than one choosing among five, and every tool description occupies context whether or not it gets called.
 
-The marketplace copy of `mcp.json` is read-only, and an edit there is overwritten on update. To filter, add your own server in Cursor's user MCP config. That file interpolates `${env:NAME}`, not the plugin's `${HASDATA_API_KEY}`:
+The marketplace copy of `mcp.json` is read-only, and an edit there is overwritten on update. To filter, add your own server in Cursor's user MCP config. Leave the headers off and Cursor signs that server in with OAuth too:
 
 ```json
 {
   "mcpServers": {
     "hasdata-amazon-walmart": {
       "type": "http",
-      "url": "https://mcp.hasdata.com/mcp?apis=amazon,walmart",
-      "headers": { "x-api-key": "${env:HASDATA_API_KEY}" }
+      "url": "https://mcp.hasdata.com/mcp?apis=amazon,walmart"
     }
   }
 }
 ```
+
+To use an API key on that entry instead, add `"headers": { "x-api-key": "${env:HASDATA_API_KEY}" }`. A header on a connection turns OAuth off for it. User MCP config interpolates `${env:NAME}`.
 
 Services combine comma-separated or by repeating the parameter. If every name is unknown the server returns HTTP 400. If at least one name is valid, the unknown ones are ignored, so `amazon,walmrart` returns only Amazon.
 

@@ -5,7 +5,7 @@ alwaysApply: false
 
 # HasData through one endpoint
 
-`https://mcp.hasdata.com/mcp` exposes every HasData tool at once, 68 of them, across search, e-commerce, maps, travel, real estate, jobs and social. This plugin sends an `x-api-key` header. The server also accepts OAuth 2.1 on a connection that does not send that header. Do not remove the header from the installed plugin. Cursor keeps that file read-only and will overwrite the edit.
+`https://mcp.hasdata.com/mcp` exposes every HasData tool at once, 68 of them, across search, e-commerce, maps, travel, real estate, jobs and social. This plugin connects with OAuth 2.1. The tool list loads before sign-in. A tool call without a session returns 401, usually inside the tool result. Do not add an `x-api-key` header to the installed file: a header on this connection turns OAuth off, and Cursor keeps the file read-only and will overwrite the edit.
 
 ## Narrow the surface before you connect
 

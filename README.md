@@ -33,7 +33,7 @@ https://mcp.hasdata.com/mcp
 
 ## What you need
 
-Cursor, and a HasData API key from the [dashboard](https://app.hasdata.com/sign-up?utm_source=github&utm_medium=syndication&utm_campaign=cursor-plugin). The key is free to create with no card. This is a remote server, so a URL and a header is the whole setup.
+Cursor, and a HasData account. Sign-up is free and needs no card: [create one](https://app.hasdata.com/sign-up?utm_source=github&utm_medium=syndication&utm_campaign=cursor-plugin). After install, Cursor opens the sign-in for the hosted server.
 
 ## Install
 
@@ -47,23 +47,20 @@ To install straight from this repository instead, point Cursor at it and it read
 
 ## Authentication
 
-Cursor asks for the key when you install the plugin. The manifest declares a `HASDATA_API_KEY` variable, and the bundled `mcp.json` sends it as a header:
+The bundled `mcp.json` is only the server URL. Cursor discovers OAuth on that endpoint and asks you to sign in. The tool list loads before you do. A call without a session fails on the tool call, usually as an error inside the tool result, which is the failure to expect when the tools appear but nothing comes back.
 
 ```json
 {
   "mcpServers": {
     "hasdata": {
       "type": "http",
-      "url": "https://mcp.hasdata.com/mcp",
-      "headers": { "x-api-key": "${HASDATA_API_KEY}" }
+      "url": "https://mcp.hasdata.com/mcp"
     }
   }
 }
 ```
 
-To change the key later, open the plugin in Cursor settings and edit the variable. The tool list loads without a key. A missing or wrong key fails on the tool call, usually as an error inside the tool result, which is the failure to expect when the tools appear but nothing comes back.
-
-This install uses the API key. The server also accepts OAuth 2.1, but only on a connection that does not send `x-api-key`. The bundled file is read-only after install, so do not delete its `headers` block to switch modes.
+One HasData account covers every site. Do not add an `x-api-key` header to this file. A header turns OAuth off for that connection, and Cursor keeps the installed file read-only. An API key still works on a server you add yourself, in Narrowing the tool list.
 
 ## What is inside
 
@@ -157,19 +154,20 @@ Google Search, Google Images, Google Trends, Google Scholar, Google Maps, Google
 
 The full endpoint exposes every tool at once. A model choosing among dozens of similarly shaped tools picks wrong more often than one choosing among five, and every tool description occupies context whether or not it gets called.
 
-The marketplace copy of `mcp.json` is read-only, and an edit there is overwritten on update. To filter, add your own server in Cursor's user MCP config. That file interpolates `${env:NAME}`, not the plugin's `${HASDATA_API_KEY}`:
+The marketplace copy of `mcp.json` is read-only, and an edit there is overwritten on update. To filter, add your own server in Cursor's user MCP config. Leave the headers off and Cursor signs that server in with OAuth too:
 
 ```json
 {
   "mcpServers": {
     "hasdata-amazon-walmart": {
       "type": "http",
-      "url": "https://mcp.hasdata.com/mcp?apis=amazon,walmart",
-      "headers": { "x-api-key": "${env:HASDATA_API_KEY}" }
+      "url": "https://mcp.hasdata.com/mcp?apis=amazon,walmart"
     }
   }
 }
 ```
+
+To use an API key on that entry instead, add `"headers": { "x-api-key": "${env:HASDATA_API_KEY}" }`. A header on a connection turns OAuth off for it. User MCP config interpolates `${env:NAME}`.
 
 Services combine comma-separated or by repeating the parameter. If every name is unknown the server returns HTTP 400. If at least one name is valid, the unknown ones are ignored, so `amazon,walmrart` returns only Amazon.
 
@@ -199,7 +197,7 @@ Several omit a key rather than returning it empty. On Bing and DuckDuckGo the ad
 
 Several never return nothing. DuckDuckGo answers a nonsense query with ten loosely related results, Bing does the same, and Google Maps returns a single guessed place.
 
-A validation failure names the field and is not billed. It often arrives inside the tool result rather than as an HTTP status. A 401 means the key is missing or wrong, and it arrives on the tool call, not when the tool list loads.
+A validation failure names the field and is not billed. It often arrives inside the tool result rather than as an HTTP status. A 401 means the connection is not signed in, and it arrives on the tool call, not when the tool list loads.
 
 The per-site rules carry the specific cases. Read them rather than inferring one site from another.
 
@@ -232,9 +230,9 @@ node /path/to/plugin-template/scripts/validate-template.mjs
 
 ## FAQ
 
-### Do I need an API key for each site?
+### Do I need a separate login for each site?
 
-No. One HasData key covers every site in the table above. There is no Google Cloud project to set up for Maps or YouTube, and no Zillow or Yelp partner approval to obtain.
+No. One HasData sign-in covers every site in the table above. There is no Google Cloud project to set up for Maps or YouTube, and no Zillow or Yelp partner approval to obtain.
 
 ### Does this run a browser on my machine?
 
